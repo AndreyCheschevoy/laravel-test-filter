@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\UserFilter;
 use App\User;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::select('name', 'email', 'gender', 'status', 'age')->get();
+        $allUsers = User::select('name', 'email', 'gender', 'status', 'age');
+        $users = (new UserFilter($allUsers, $request))->apply()->get();
 
         $filters = User::distinct('age')->pluck('age')->sort();
 
