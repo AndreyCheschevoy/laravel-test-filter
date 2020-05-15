@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" value="{{ csrf_token() }}">
 
     <title>Laravel</title>
 
@@ -10,8 +11,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
 
@@ -21,40 +21,72 @@
             <div class="card m-1 p-1">
                 Filters
                 <div class="card-body">
-                    <form>
+                    <form id="filter">
                         <div class="form-group">
                             <label for="search">Search</label>
-                            <input type="text" class="form-control" id="search" name="search">
+                            <input type="text" class="form-control" id="search" name="name" value="{{old('name')}}">
                         </div>
                         <div class="form-group form-check">
                             <h6>Age</h6>
-                            @foreach($filters as $filter)
+                            @foreach($filters_age as $key => $age)
                                 <div>
-                                    <input type="checkbox" class="form-check-input" id="age" name="age">
-                                    <label class="form-check-label" for="age">{{$filter}}</label>
+                                    <input type="checkbox" class="form-check-input" id="age_{{$key}}" name="age[]"
+                                           value="{{$age}}"
+                                           @if(is_array(old('age')) && in_array($age, old('age'))) checked @endif>
+                                    <label class="form-check-label" for="age_{{$key}}">{{$age}}</label>
                                 </div>
                             @endforeach
                         </div>
                         <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" id="online" name="online">
-                            <label class="form-check-label" for="online">Online?</label>
+                            <h6>Hobby</h6>
+                            @foreach($filters_hobby as $key => $hobby)
+                                <div>
+                                    <input type="checkbox" class="form-check-input" id="age_{{$key}}" name="hobby[]"
+                                           value="{{$hobby}}"
+                                           @if(is_array(old('hobby')) && in_array($hobby, old('hobby'))) checked @endif>
+                                    <label class="form-check-label" for="age_{{$key}}">{{$hobby}}</label>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" id="s-on" value="1"
+                                       @if(old('status') && old('status') == 1) checked @endif>
+
+                                <label class="form-check-label" for="s-on">
+                                    Online
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="status" id="s-off" value="2"
+                                       @if(old('status') && old('status') == 2) checked @endif>
+
+                                <label class="form-check-label" for="s-off">
+                                    Offline
+                                </label>
+                            </div>
                         </div>
                         <div class="form-group">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gander" id="g-male" value="0"
-                                       checked>
+                                <input class="form-check-input" type="radio" name="gender" id="g-male" value="1"
+                                       @if(old('gender') && old('gender') == 1) checked @endif>
+
                                 <label class="form-check-label" for="g-male">
                                     male
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gander" id="g-female" value="1">
+                                <input class="form-check-input" type="radio" name="gender" id="g-female" value="2"
+                                       @if(old('gender') && old('gender') == 2) checked @endif>
+
                                 <label class="form-check-label" for="g-female">
                                     female
                                 </label>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
+                        <a href="{{route('home')}}">Clean</a>
                     </form>
                 </div>
             </div>
@@ -65,9 +97,9 @@
                     <div class="col-sm-6 col-lg-3 col-xl-2 card m-1 p-1">
                         <p>name: {{$user->name}}</p>
                         <p>age: {{$user->age}}</p>
-                        <p>gander: {{$user->gander === 0 ? 'male' : 'female'}}</p>
+                        <p>gender: {{$user->gender === 1 ? 'male' : 'female'}}</p>
                         <p>status: {{$user->status === 1 ? 'online' : 'offline'}}</p>
-                        <p>email: {{$user->email}}</p>
+                        <p>hobby: {{$user->hobby}}</p>
                     </div>
                 @endforeach
             </div>
