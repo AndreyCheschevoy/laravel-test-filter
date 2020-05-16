@@ -11,9 +11,6 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        if (request()->ajax()) {
-            dd(1);
-        }
 
         $allUsers = User::select('name', 'email', 'gender', 'status', 'age', 'hobby');
         $users = (new UserFilter($allUsers, $request))->apply()->get();
@@ -24,7 +21,16 @@ class HomeController extends Controller
         $filters_age = collect($userForFilter)->pluck('age')->unique()->sort();
         $filters_hobby = collect($userForFilter)->pluck('hobby')->unique()->sort();
 
+        if ($request->expectsJson()){
+            return response()->json([
+                'users' => $users,
+                'hobby' => $filters_hobby,
+                'age' => $filters_age,
+            ]);
+        }
+
         $request->flash();
+
         return view('welcome', compact('users', 'filters_age', 'filters_hobby'));
     }
 }
